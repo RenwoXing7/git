@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>员工数据</title>
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="static/h-ui/css/H-ui.min.css">
+<link rel="stylesheet" href="static/h-ui.admin/css/H-ui.login.css">
+<link rel="stylesheet" href="static/h-ui.admin/css/style.css">
+<link rel="stylesheet" href="static/Hui-iconfont/1.0.8/iconfont.css">
+</head>
+<body>
+	<div class="page-container">
+		<div class="cl pd-5 bg-1 bk-gray mt-20" style="text-align: right">
+			<a href="#" onclick="emp_add('添加员工','edit.html','500','450')"
+				class="btn btn-primary  radius">添加员工</a>
+		</div>
+		<div class="mt-20">
+
+			<table
+				class="table table-border table-bordered table-hover table-bg table-sort">
+				<thead>
+					<tr class="text-c">
+						<th width="80">员工编号</th>
+						<th width="100">员工姓名</th>
+						<th width="40">员工工作</th>
+						<th width="40">员工薪水</th>
+						<th width="40">入职日期</th>
+						<th width="90">所属部门</th>
+						<th width="100">操作</th>
+					</tr>
+				</thead>
+				<tbody>				
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+	<script src="static/h-ui/js/H-ui.min.js"></script>
+	<script src="static/h-ui.admin/js/H-ui.admin.js"></script>
+	<script src="static/layer/2.4/layer.js"></script>
+	
+	<script>
+		$(function(){
+			emp_list();
+		});
+	
+		/* 添加 */
+		function emp_add(title, url, w, h) {
+			layer_show(title, url, w, h);
+		}
+		
+		/*删除*/
+		function emp_del(empno) {
+			if(confirm('确认要删除编号为：'+empno+' 员工数据吗?')){
+				//ajax请求
+				$.ajax({
+					method:'delete',
+					url:'../emp/'+empno,
+					success:function(data){
+						if(data>0){
+							alert('删除成功');
+						}else{
+							alert('删除失败');
+						}
+						//刷新页面
+						location.reload();
+					},
+					dataType:'text'					
+				});
+			}
+		}
+		/*显示员工数据*/
+		function emp_list(){
+			$.get('../list',function(data){
+				var tr='';
+				$.each(data,function(i,v){
+					var dname='';
+					if(v.dept!=null&&v.dept.dname!=null){
+						dname=v.dept.dname;
+					}
+					
+					tr+=`
+						<tr class="text-c">
+							<th>${v.empno}</th>
+							<td>${v.ename}</td>
+							<td>${v.job}</td>
+							<td>${v.sal}</td>
+							<td>${v.hiredate}</td>
+							<td>${dname}</td>
+							<td><a href="#" class="btn btn-primary size-MINI radius" onclick="emp_add('修改员工','edit.html?empno=${v.empno}','500','450')">修改</a>|<a href="#" class="btn btn-primary size-MINI radius" onclick="emp_del('${v.empno}')">删除</a></td>
+						</tr>
+					`;
+				});
+				$('tbody').html(tr);
+			},'json');
+			
+		}
+	</script>
+</body>
+</html>
